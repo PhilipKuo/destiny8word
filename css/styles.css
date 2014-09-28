@@ -1,0 +1,115 @@
+body {
+    width:1120px;
+    margin:10px auto;
+}
+header, nav, article, aside, section, footer, address {
+    display:block;
+}
+header, nav, article, aside, section, footer {
+    border:1px solid #ccc;
+    margin:0px 0px 10px;
+    padding:10px;
+}
+header {
+    text-align:center;
+}
+nav {
+    text-align:center;
+    padding:5px;
+}
+nav ul, nav li {
+    list-style-type:none;
+    display:inline;
+    padding:0px 10px;
+}
+nav ul h1 {
+    display:none;
+}
+article {
+    float:left;
+    width:820px;
+}
+aside {
+    float:right;
+    width:240px;
+}
+footer {
+    clear:both;
+    text-align: center;
+    padding: 5px;
+    font-size: 80%;
+}
+/* link */
+a {
+    color: #F90;
+    text-decoration: underline;
+}
+a:hover {
+    color: #F00;
+}
+table {
+    border-collapse: collapse;
+    font-family: '宋體', Simsun;
+    font-size: 18px;
+}
+td, th {
+    border: 1px solid black;
+    padding: 3px 3px 3px 3px;
+    text-align: left;
+}
+.td1 {
+    text-align: center;
+    vertical-align: middle;
+    color: #666666;
+}
+.td2 {
+    text-align: center;
+    vertical-align: middle;
+    color: #F08080;
+}
+
+.spn1 {
+    text-align: center;
+    color: #666666;
+}
+.spn2 {
+    text-align: center;
+    color: #F08080;
+}
+.spn3 {
+    text-align: center;
+    color: #336699;
+}
+
+.spn10g {
+    height: 100%;
+    vertical-align: middle;
+    text-align: center;
+    color: #336699;
+    -ms-writing-mode: tb-rl; /* old syntax. IE */
+    -webkit-writing-mode: vertical-rl;
+    -moz-writing-mode: vertical-rl;
+    -ms-writing-mode: vertical-rl;
+    writing-mode: vertical-rl; /* new syntax */
+}
+.spn_name_birth {
+    width: 95%;
+    height: 95%;
+    vertical-align: middle;
+    text-align: left;
+    color: black;
+    -ms-writing-mode: tb-rl; /* old syntax. IE */
+    -webkit-writing-mode: vertical-rl;
+    -moz-writing-mode: vertical-rl;
+    -ms-writing-mode: vertical-rl;
+    writing-mode: vertical-rl; /* new syntax */
+}
+.spn_name_birth .nm {
+    color: green;
+}
+.spn_name_birth .ymdh {
+    color: #F08080;
+}
+.spn_name_birth .desc {
+    color: #666666;
+}
