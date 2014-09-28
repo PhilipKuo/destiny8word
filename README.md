@@ -1,3 +1,3 @@
-Chinese destiny calculator (8 words) written in javascript
-Taipei time
+Chinese destiny calculator (8 words) written in javascript, use Taipei time.
+
 ============
