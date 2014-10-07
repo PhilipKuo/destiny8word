@@ -9,10 +9,28 @@
         <script src="script/jquery-1.10.2.js"></script>
         <script src="script/seasons.js" ></script>
         <script src="script/eightwords.js" ></script>
+        <script src="script/wei1000mile.js" ></script>
         
         <link type="text/css" rel="stylesheet" media="screen" href="css/styles.css" />
         
         <script>
+            
+            function parseDate(mdy0, mdy1, mdy2) {
+                return new Date(parseInt(mdy0), parseInt(mdy1)-1, parseInt(mdy2));
+            }
+
+            function dayDiff(pFirst, pSecond) {
+                var v_first = pFirst.valueOf() - (pFirst.getTimezoneOffset() * 60000);
+                var v_second = pSecond.valueOf() - (pSecond.getTimezoneOffset() * 60000);
+                return (v_second - v_first)/(1000 * 60 * 60 * 24);
+            }
+            
+            function hour2hour(pSmallHour) {
+                var v_small_hour = parseInt(pSmallHour) + 1;
+                var v_big_hour = (v_small_hour === 24) ? 0 : Math.floor(v_small_hour / 2);
+                return v_big_hour;
+            }
+            
             function f_append_mn(pObjName) {
                 var v_ddl = $('#' + pObjName);
                 if (v_ddl.is("SELECT")) {
@@ -38,16 +56,6 @@
                     }
                 }
             }
-            /*function f_append_hour(pObjName) {
-                var v_ddl = $('#' + pObjName);
-                if (v_ddl.is("SELECT")) {
-                    for (var ii = 0; ii < 12; ii++) {
-                        var v_val = ii;
-                        var v_txt = '' + f_get_n(ii);
-                        $(v_ddl).append($("<option></option>").attr("value", v_val).text(v_txt));
-                    }
-                }
-            }*/
             function f_append_hm(pObjName, pMax) {
                 var v_ddl = $('#' + pObjName);
                 if (v_ddl.is("SELECT")) {
@@ -59,40 +67,16 @@
                 }
             }
             
-            function parseDate(mdy0, mdy1, mdy2) {
-                return new Date(parseInt(mdy0), parseInt(mdy1)-1, parseInt(mdy2));
-            }
-
-            function daydiff(first, second) {
-                return (second-first)/(1000*60*60*24);
-            }
-            
-            function hour2hour(pSmallHour) {
-                var v_small_hour = parseInt(pSmallHour) + 1;
-                var v_big_hour = (v_small_hour === 24) ? 0 : Math.floor(v_small_hour / 2);
-                return v_big_hour;
-            }
-        
-
             function f_calculate_mn() {
                 
-                // -- 0 --
+                // -- 0 -- read input data
                 var v_year = $.trim($('#ddl_year').val());
                 var v_month = $.trim($('#ddl_month').val());
                 var v_day = $.trim($('#ddl_day').val());
                 var v_hour = $.trim($('#ddl_hour').val());
                 var v_min = $.trim($('#ddl_min').val());
-                
-                $('#spn_name').text($.trim($('#i_name').val()));
-                $('#spn_ymdh1').text(v_year);
-                $('#spn_ymdh2').text(v_month);
-                $('#spn_ymdh3').text(v_day);
-                $('#spn_ymdh4').text(v_hour);
-                $('#spn_ymdh5').text(v_min);
-                
-                var v_desc = $.trim($('#txt_desc').val());
-                v_desc = v_desc.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                $('#spn_desc').html(v_desc);
+                //var v_desc = $.trim($('#txt_desc').val());
+                //v_desc = v_desc.replace(/(?:\r\n|\r|\n)/g, '<br />');
                 
                 // - 0.3 - 年干支
                 v_year = parseInt(v_year);
@@ -102,7 +86,6 @@
                     v_year_mn -= 1;
                 }
                 v_year_mn = v_year_mn % 60;
-                $('#spn_ymdh6').text(f_get_season_title(v_season));
                 
                 // - 0.5 - 月干支
                 var v_year_month_mod = v_year_mn % 5;
@@ -113,7 +96,7 @@
                 // - 0.6 - 日干支
                 var v_date1 = parseDate('1912', '1', '1');
                 var v_date2 = parseDate(v_year+1911, v_month, v_day);
-                var v_diff = daydiff(v_date1, v_date2);
+                var v_diff = dayDiff(v_date1, v_date2);
                 
                 // - 0.6.5 -
                 if (v_hour >= 23) {
@@ -126,21 +109,30 @@
                 var v_date_hour_mod = v_date_mn % 5;
                 var v_hour_mn = v_date_hour_mod * 12 + parseInt(v_bighour);
                 
-                
+                // - 0.8 - 顯示年月日時節氣
+                $('#spn_name').text($.trim($('#i_name').val()));
+                $('#spn_ymdh1').text(v_year);
+                $('#spn_ymdh2').text(v_month);
+                $('#spn_ymdh3').text(v_day);
+                $('#spn_ymdh4').text(v_hour);
+                $('#spn_ymdh5').text(v_min);
+                $('#spn_ymdh6').text(f_get_season_title(v_season));
+                //$('#spn_desc').html(v_desc);
+                                
                 // -- 1 -- 八字
                 var v_yy = f_idx_60_mn(v_year_mn);  // 年干支 $('#ddl_yy').val()
                 var v_mm = f_idx_60_mn(v_month_mn); // 月干支 $('#ddl_mm').val()
                 var v_dd = f_idx_60_mn(v_date_mn);  // 日干支 $('#ddl_dd').val()
                 var v_hh = f_idx_60_mn(v_hour_mn);  // 時干支 $('#ddl_hh').val()
 
-                $('#spn_year1').text(f_get_m(v_yy[0]));
-                $('#spn_year2').text(f_get_n(v_yy[1]));
-                $('#spn_month1').text(f_get_m(v_mm[0]));
-                $('#spn_month2').text(f_get_n(v_mm[1]));
-                $('#spn_day1').text(f_get_m(v_dd[0]));
-                $('#spn_day2').text(f_get_n(v_dd[1]));
-                $('#spn_hour1').text(f_get_m(v_hh[0]));
-                $('#spn_hour2').text(f_get_n(v_hh[1]));
+                $('#spn_year1').text(v_yy[2]);
+                $('#spn_year2').text(v_yy[3]);
+                $('#spn_month1').text(v_mm[2]);
+                $('#spn_month2').text(v_mm[3]);
+                $('#spn_day1').text(v_dd[2]);
+                $('#spn_day2').text(v_dd[3]);
+                $('#spn_hour1').text(v_hh[2]);
+                $('#spn_hour2').text(v_hh[3]);
 
                 // -- 3 -- 天干十神
                 $('#spn_year0').html(f_get_10g(v_dd[0], v_yy[0]));
@@ -154,37 +146,97 @@
                 f_display_m1n(v_dd[0], v_hh[1], 'spn_hour3', 'spn_hour4');
                 
                 // -- 5 -- 十二長生
-                var str_12dl_yy = f_get_12dl(v_dd[0], v_yy[1]);
-                var str_12dl_mm = f_get_12dl(v_dd[0], v_mm[1]);
-                var str_12dl_dd = f_get_12dl(v_dd[0], v_dd[1]);
-                var str_12dl_hh = f_get_12dl(v_dd[0], v_hh[1]);
-                $('#spn_year5').html(str_12dl_yy);
-                $('#spn_month5').html(str_12dl_mm);
-                $('#spn_day5').html(str_12dl_dd);
-                $('#spn_hour5').html(str_12dl_hh);
-
+                f_display_12dl(v_dd[0], v_yy[1], 'spn_year5');
+                f_display_12dl(v_dd[0], v_mm[1], 'spn_month5');
+                f_display_12dl(v_dd[0], v_dd[1], 'spn_day5');
+                f_display_12dl(v_dd[0], v_hh[1], 'spn_hour5');
+                
+                // -- 6 -- 韋千里
+                var v_idx = '' + v_dd[2] + v_mm[3] + v_hh[2] + v_hh[3];
+                if (m_wtm[v_idx]) {
+                    $('#spn_desc').html(m_wtm[v_idx]);
+                } else {
+                    $('#spn_desc').html('');
+                }
+                
+                // -- 7 -- 地支神煞
+                var str_spirits_year = '';
+                var str_spirits_month = '';
+                var str_spirits_day = '';
+                var str_spirits_hour = '';
+                // - 7.1 - 日干對照地支
+                str_spirits_year = f_get_m_day_spirits(v_dd[0], v_yy[3], str_spirits_year);
+                str_spirits_month = f_get_m_day_spirits(v_dd[0], v_mm[3], str_spirits_month);
+                str_spirits_day = f_get_m_day_spirits(v_dd[0], v_dd[3], str_spirits_day);
+                str_spirits_hour = f_get_m_day_spirits(v_dd[0], v_hh[3], str_spirits_hour);
+                // - 7.2 - 日支對照其他地支
+                str_spirits_year = f_get_n_day_spirits(v_dd[1], v_yy[3], str_spirits_year);
+                str_spirits_month = f_get_n_day_spirits(v_dd[1], v_mm[3], str_spirits_month);
+                str_spirits_hour = f_get_n_day_spirits(v_dd[1], v_hh[3], str_spirits_hour);
+                // - 7.3 - 日干支
+                str_spirits_day = f_get_mn_day_spirits(v_dd[2], v_dd[3], str_spirits_day);
+                
+                // - 7.4 - 月支對照其他干支
+                str_spirits_year = f_get_n_month_spirits(v_mm[1], v_yy[2], v_yy[3], str_spirits_year);
+                str_spirits_month = f_get_n_month_spirits(v_mm[1], v_mm[2], v_mm[3], str_spirits_month);
+                str_spirits_day = f_get_n_month_spirits(v_mm[1], v_dd[2], v_dd[3], str_spirits_day);
+                str_spirits_hour = f_get_n_month_spirits(v_mm[1], v_hh[2], v_hh[3], str_spirits_hour);
+                // - 7.5 - 年支對照月日時支
+                str_spirits_month = f_get_n_year_spirits(v_yy[1], v_mm[3], str_spirits_month);
+                str_spirits_day = f_get_n_year_spirits(v_yy[1], v_dd[3], str_spirits_day);
+                str_spirits_hour = f_get_n_year_spirits(v_yy[1], v_hh[3], str_spirits_hour);
+                
+                $('#spn_year6').html(str_spirits_year);
+                $('#spn_month6').html(str_spirits_month);
+                $('#spn_day6').html(str_spirits_day);
+                $('#spn_hour6').html(str_spirits_hour);
             }
             
             function f_display_m1n(pMain, pN, pSpnN, pSpnG) {
-                var _arr_m1n = f_get_m1n(pN);
+                var v_arr_m1n = f_get_m1n(pN);
                 var str_hidden_m = '', str_10g_m = '';
-                for (var i=0; i<_arr_m1n.length; i++) {
-                    str_hidden_m += f_get_m(_arr_m1n[i]);
-                    str_10g_m += (f_get_10g(pMain, _arr_m1n[i]) + '<br/>');
+                for (var i=0; i<v_arr_m1n.length; i++) {
+                    str_hidden_m += (f_get_m(v_arr_m1n[i]) + '<br/>');
+                    str_10g_m += (f_get_10g(pMain, v_arr_m1n[i]) + '<br/>');
                 }
-                $('#'+pSpnN).text(str_hidden_m);
+                $('#'+pSpnN).html(str_hidden_m);
                 $('#'+pSpnG).html(str_10g_m);
-                switch (str_hidden_m.length) {
+                
+                switch (v_arr_m1n.length) {
                     case 2:
+                        $('#'+pSpnN).css('width', '45%');
                         $('#'+pSpnG).css('width', '45%');
                         break;
                     case 3:
+                        $('#'+pSpnN).css('width', '65%');
                         $('#'+pSpnG).css('width', '65%');
                         break;
                     default:
+                        $('#'+pSpnN).css('width', '20%');
                         $('#'+pSpnG).css('width', '20%');
                 }
             }
+            
+            function f_display_12dl(pMain, pN, pSpn) {
+                var v_12dl = f_get_12dl(pMain, pN);
+                var str_12dl = '';
+                for (var i=0; i<v_12dl.length; i++) {
+                    str_12dl += (v_12dl[i] + '<br/>');
+                }
+                $('#'+pSpn).html(str_12dl);
+                
+                switch (v_12dl.length) {
+                    case 2:
+                        $('#'+pSpn).css('width', '45%');
+                        break;
+                    case 3:
+                        $('#'+pSpn).css('width', '65%');
+                        break;
+                    default:
+                        $('#'+pSpn).css('width', '20%');
+                }
+            }
+            
         </script>
     </head>
 
@@ -220,7 +272,7 @@
                                 <span id="spn_ymdh4" class="ymdh"></span>&nbsp;時
                                 <span id="spn_ymdh5" class="ymdh"></span>&nbsp;分
                                 &nbsp;&nbsp;&nbsp;
-                                <span id="spn_ymdh6" class="ymdh"></span>
+                                <span id="spn_ymdh6" class="season"></span>
                             </span>
                         </td>
                     </tr>
@@ -241,16 +293,16 @@
                     </tr>
                     <tr>
                         <td width="120" class="td1">
-                            <span id="spn_hour3" class="spn10g" ></span>
+                            <span id="spn_hour3" class="spn10g" style="width: 100%" ></span>
                         </td>
                         <td width="120" class="td1">
-                            <span id="spn_day3" class="spn10g" ></span>
+                            <span id="spn_day3" class="spn10g" style="width: 100%" ></span>
                         </td>
                         <td width="120" class="td1">
-                            <span id="spn_month3" class="spn10g" ></span>
+                            <span id="spn_month3" class="spn10g" style="width: 100%" ></span>
                         </td>
                         <td width="120" class="td1">
-                            <span id="spn_year3" class="spn10g" ></span>
+                            <span id="spn_year3" class="spn10g" style="width: 100%" ></span>
                         </td>
                         <td width="10" height="40" class="td1">藏</td>
                     </tr>
@@ -285,10 +337,18 @@
                         <td width="10" height="40" class="td1">運</td>
                     </tr>
                     <tr>
-                        <td width="120" class="td1">&nbsp;</td>
-                        <td width="120" class="td1">&nbsp;</td>
-                        <td width="120" class="td1">&nbsp;</td>
-                        <td width="120" class="td1">&nbsp;</td>
+                        <td width="120" class="td1">
+                            <span id="spn_hour6" class="spn_name_birth" style="color: #666666;" ></span>
+                        </td>
+                        <td width="120" class="td1">
+                            <span id="spn_day6" class="spn_name_birth" style="color: #666666;" ></span>
+                        </td>
+                        <td width="120" class="td1">
+                            <span id="spn_month6" class="spn_name_birth" style="color: #666666;" ></span>
+                        </td>
+                        <td width="120" class="td1">
+                            <span id="spn_year6" class="spn_name_birth" style="color: #666666;" ></span>
+                        </td>
                         <td width="10" height="200" class="td1">地<br/><br/>支<br/><br/>神<br/><br/>煞</td>
                     </tr>
                 </table>
@@ -301,21 +361,21 @@
                 <h1>生辰年月日時</h1>
                 <ul>
                     <li>姓名 : <input type="text" id="i_name" value="" style="width: 100px; margin: 2px; vertical-align: middle;" ></li>
-                    <li>年 : <select id="ddl_year" data-placeholder="選擇民國年..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" ></select></li>
-                    <li>月 : <select id="ddl_month" data-placeholder="選擇月份..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" ></select></li>
-                    <li>日 : <select id="ddl_day" data-placeholder="選擇日期..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" ></select></li>
-                    <li>時 : <select id="ddl_hour" data-placeholder="選擇時..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" ></select></li>
-                    <li>分 : <select id="ddl_min" data-placeholder="選擇分..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" ></select></li>
+                    <li>年 : <select id="ddl_year" data-placeholder="選擇民國年..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
+                    <li>月 : <select id="ddl_month" data-placeholder="選擇月份..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
+                    <li>日 : <select id="ddl_day" data-placeholder="選擇日期..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
+                    <li>時 : <select id="ddl_hour" data-placeholder="選擇時..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
+                    <li>分 : <select id="ddl_min" data-placeholder="選擇分..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
                 </ul>
-                <textarea id="txt_desc" style="width: 100%; height: 150px"></textarea>
+                <!--textarea id="txt_desc" style="width: 100%; height: 150px"></textarea-->
             </section>
-            <input type="button" id="btn_test" value="八字排盤" style="width: 120px" onclick="f_calculate_mn();" >
+            <!--input type="button" id="btn_test" value="八字排盤" style="width: 120px" onclick="f_calculate_mn();" -->
         </aside>
 
         <script>
             $(document).ready(function() {
                 
-                f_append_ymd('ddl_year', 83, 104);
+                f_append_ymd('ddl_year', 57, 104);
                 f_append_ymd('ddl_month', 1, 12);
                 f_append_ymd('ddl_day', 1, 31);
                 f_append_hm('ddl_hour', 24);

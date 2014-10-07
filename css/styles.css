@@ -91,6 +91,7 @@ td, th {
     -moz-writing-mode: vertical-rl;
     -ms-writing-mode: vertical-rl;
     writing-mode: vertical-rl; /* new syntax */
+    
 }
 .spn_name_birth {
     width: 95%;
@@ -108,6 +109,13 @@ td, th {
     color: green;
 }
 .spn_name_birth .ymdh {
+    color: #F08080;
+    -ms-writing-mode: horizontal-tb;
+    -webkit-writing-mode: horizontal-tb;
+    -moz-writing-mode: horizontal-tb;
+    -ms-writing-mode: horizontal-tb;
+}
+.spn_name_birth .season {
     color: #F08080;
 }
 .spn_name_birth .desc {
