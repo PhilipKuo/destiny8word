@@ -110,8 +110,14 @@ var m_arr_spirit_day_mn = [
     ['魁罡', ['戊戌', '庚辰', '庚戌', '壬辰']]
 ];
 
+var m_arr_3frabjous = [
+    ['三奇貴人(天)', '甲戊庚'],
+    ['三奇貴人(地)', '乙丙丁'],
+    ['三奇貴人(人)', '壬癸辛']
+];
+
 // 伏吟、反吟
-// 三奇、天赦、三台貴
+// 天赦、三台貴
 // 
 
 // --- 取得天干(文字) ---
@@ -264,6 +270,21 @@ function f_get_mn_day_spirits(pMDay, pNDay, pStr) {
                 } else {
                     pStr += ("，" + m_arr_spirit_day_mn[i][0]);
                 }
+            }
+        }
+    }
+    return pStr;
+}
+// --- 三奇 --- 
+function f_get_3frabjous(pMDay, pMMonth, pMYear, pStr) {
+    var p3M = '' + pMDay + pMMonth + pMYear;
+    for (var i=0; i<m_arr_3frabjous.length; i++) {
+        var v_3m = m_arr_3frabjous[i][1];
+        if (v_3m === p3M) {
+            if (pStr.length === 0) {
+                pStr = m_arr_3frabjous[i][0];
+            } else {
+                pStr += ("，" + m_arr_3frabjous[i][0]);
             }
         }
     }

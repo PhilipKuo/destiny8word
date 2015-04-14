@@ -10,6 +10,7 @@
         <script src="script/seasons.js" ></script>
         <script src="script/eightwords.js" ></script>
         <script src="script/wei1000mile.js" ></script>
+        <script src="script/ctbj.js" ></script>
         
         <link type="text/css" rel="stylesheet" media="screen" href="css/styles.css" />
         
@@ -75,8 +76,6 @@
                 var v_day = $.trim($('#ddl_day').val());
                 var v_hour = $.trim($('#ddl_hour').val());
                 var v_min = $.trim($('#ddl_min').val());
-                //var v_desc = $.trim($('#txt_desc').val());
-                //v_desc = v_desc.replace(/(?:\r\n|\r|\n)/g, '<br />');
                 
                 // - 0.3 - 年干支
                 v_year = parseInt(v_year);
@@ -151,13 +150,21 @@
                 f_display_12dl(v_dd[0], v_dd[1], 'spn_day5');
                 f_display_12dl(v_dd[0], v_hh[1], 'spn_hour5');
                 
-                // -- 6 -- 韋千里
-                var v_idx = '' + v_dd[2] + v_mm[3] + v_hh[2] + v_hh[3];
-                if (m_wtm[v_idx]) {
-                    $('#spn_desc').html(m_wtm[v_idx]);
-                } else {
-                    $('#spn_desc').html('');
-                }
+                // -- 6 --
+                var v_desc = '', v_desc2 = '';
+                
+                // - 6.1 - 窮通寶鑑 五行通論
+                v_desc = f_get_ctbj_1(v_mm[1], v_dd[0]);
+                
+                // - 6.2 - 韋千里
+                v_desc = v_desc + '<br/><br/>' + f_get_wtm(v_dd[2], v_mm[3], v_hh[2], v_hh[3])
+                
+                // - 6.3 - 窮通寶鑑 
+                v_desc2 = f_get_ctbj_2(v_mm[3], v_dd[2]);
+                
+                // - 6.n -
+                $('#spn_desc').html(v_desc);
+                $('#spn_desc2').html(v_desc2);
                 
                 // -- 7 -- 地支神煞
                 var str_spirits_year = '';
@@ -186,10 +193,14 @@
                 str_spirits_day = f_get_n_year_spirits(v_yy[1], v_dd[3], str_spirits_day);
                 str_spirits_hour = f_get_n_year_spirits(v_yy[1], v_hh[3], str_spirits_hour);
                 
+                // - 7.6 - 三奇貴人
+                str_spirits_day = f_get_3frabjous(v_dd[2], v_mm[2], v_yy[2], str_spirits_day);
+                
                 $('#spn_year6').html(str_spirits_year);
                 $('#spn_month6').html(str_spirits_month);
                 $('#spn_day6').html(str_spirits_day);
                 $('#spn_hour6').html(str_spirits_hour);
+                
             }
             
             function f_display_m1n(pMain, pN, pSpnN, pSpnG) {
@@ -241,11 +252,28 @@
     </head>
 
     <body>
-        <article onclick="$('#div_aside').toggle();">
+        <article>
+            <section id="sec_inputs">
+                <div>
+                    姓名 : <input type="text" id="i_name" value="ＯＯＯ" />&nbsp;&nbsp;&nbsp;
+                    生辰 : 
+                        <select id="ddl_year" style="width: 50px; margin: 2px;" ></select>&nbsp;年&nbsp;
+                        <select id="ddl_month" style="width: 45px; margin: 2px;" ></select>&nbsp;月&nbsp;
+                        <select id="ddl_day" style="width: 45px; margin: 2px;" ></select>&nbsp;日&nbsp;
+                        <select id="ddl_hour" style="width: 45px; margin: 2px;" ></select>&nbsp;時&nbsp;
+                        <select id="ddl_min" style="width: 45px; margin: 2px;" ></select>&nbsp;分&nbsp;
+                        <span style="cursor: pointer" onclick="f_calculate_mn();">
+                            &nbsp;<img src="images/control_play.png" />&nbsp;
+                        </span>
+                        <span style="cursor: pointer" onclick="$('#sec_inputs').hide(500); $('#spn_eject').show();">
+                            &nbsp;<img src="images/control_eject.png" />&nbsp;
+                        </span>
+                </div>
+            </section>
             <section>
-                <table width="800" class="tbl1" >
+                <table width="840" class="tbl1" >
                     <tr>
-                        <td width="250" class="td1" rowspan="6">
+                        <td width="350" class="td1" rowspan="6">
                             <span id="spn_desc" class="spn_name_birth desc"></span>
                         </td>
                         <td width="120" class="td1">
@@ -262,17 +290,20 @@
                         </td>
                         <td width="10" height="80" class="td1">主<br/>星</td>
                         <td width="50" class="td1" rowspan="6">
-                            <span class="spn_name_birth" style="width: 70%">
-                                姓名：<span id="spn_name" class="nm"></span>
+                            <span class="spn_name_birth" style="width: 70%" onclick="$('#spn_nm_input').show();" >
+                                姓名：<span id="spn_name" class="nm" ></span>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 民國
-                                <span id="spn_ymdh1" class="ymdh"></span>&nbsp;年
-                                <span id="spn_ymdh2" class="ymdh"></span>&nbsp;月
-                                <span id="spn_ymdh3" class="ymdh"></span>&nbsp;日
-                                <span id="spn_ymdh4" class="ymdh"></span>&nbsp;時
-                                <span id="spn_ymdh5" class="ymdh"></span>&nbsp;分
+                                <span id="spn_ymdh1" class="ymdh" ></span>&nbsp;年
+                                <span id="spn_ymdh2" class="ymdh" ></span>&nbsp;月
+                                <span id="spn_ymdh3" class="ymdh" ></span>&nbsp;日
+                                <span id="spn_ymdh4" class="ymdh" ></span>&nbsp;時
+                                <span id="spn_ymdh5" class="ymdh" ></span>&nbsp;分
                                 &nbsp;&nbsp;&nbsp;
                                 <span id="spn_ymdh6" class="season"></span>
+                                <span id="spn_eject" style="cursor: pointer; display: none;" onclick="$(this).hide(); $('#sec_inputs').show(500);">
+                                    &nbsp;<img src="images/control_eject.png" />&nbsp;
+                                </span>
                             </span>
                         </td>
                     </tr>
@@ -352,37 +383,21 @@
                         <td width="10" height="200" class="td1">地<br/><br/>支<br/><br/>神<br/><br/>煞</td>
                     </tr>
                 </table>
+                
             </section>
-
+            
         </article>
-
-        <aside id="div_aside">
-            <section>
-                <h1>生辰年月日時</h1>
-                <ul>
-                    <li>姓名 : <input type="text" id="i_name" value="" style="width: 100px; margin: 2px; vertical-align: middle;" ></li>
-                    <li>年 : <select id="ddl_year" data-placeholder="選擇民國年..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
-                    <li>月 : <select id="ddl_month" data-placeholder="選擇月份..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
-                    <li>日 : <select id="ddl_day" data-placeholder="選擇日期..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
-                    <li>時 : <select id="ddl_hour" data-placeholder="選擇時..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
-                    <li>分 : <select id="ddl_min" data-placeholder="選擇分..." class="chzn-select" style="width: 100px; margin: 2px; vertical-align: middle;" onchange="f_calculate_mn();" ></select></li>
-                </ul>
-                <!--textarea id="txt_desc" style="width: 100%; height: 150px"></textarea-->
-            </section>
-            <!--input type="button" id="btn_test" value="八字排盤" style="width: 120px" onclick="f_calculate_mn();" -->
-        </aside>
 
         <script>
             $(document).ready(function() {
                 
-                f_append_ymd('ddl_year', 57, 104);
+                f_append_ymd('ddl_year', 45, 104);
                 f_append_ymd('ddl_month', 1, 12);
                 f_append_ymd('ddl_day', 1, 31);
                 f_append_hm('ddl_hour', 24);
                 f_append_hm('ddl_min', 60);
-                
                 f_calculate_mn();
-
+                
             });
         </script>
 
